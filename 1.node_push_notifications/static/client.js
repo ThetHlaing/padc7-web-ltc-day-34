@@ -10,13 +10,30 @@ if ("serviceWorker" in navigator) {
 
 function register() {
   // Register Service Worker
- 
+  navigator.serviceWorker.register("/worker.js")
+    .then(function (swReg) {
+      console.log('Service Worker is registered', swReg);
+      swRegistration = swReg;
+    })
+    .catch(function (error) {
+      console.error('Service Worker Error', error);
+    });
 }
 
 
 function subscribe() {
   // Subscribe the user
-  
+  swRegistration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+  })
+    .then((subscription) => {
+      console.log("Push Registered...", JSON.stringify(subscription));
+      document.getElementById('payload').innerHTML = JSON.stringify(subscription);
+    })
+    .catch(function (err) {
+      console.log('Failed to subscribe the user: ', err);
+    });
 }
 
 
